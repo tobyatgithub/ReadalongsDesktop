@@ -32,7 +32,7 @@ class readalongsUI(QMainWindow):
             "tokfile": "",
             "text_input": True,
             "force_overwrite": True,
-            "output_base": os.path.join(os.getcwd(), "current"),
+            "output_base": os.path.join(os.getcwd(), "output"),
             "bare": False,
             "config": None,
             "closed_captioning": False,
@@ -107,6 +107,8 @@ class readalongsUI(QMainWindow):
             initialFilter="Text File (*.txt *csv)",
         )
         self.config["textfile"] = response[0]
+        # grab the filename here:
+        self.config["filename"] = os.path.basename(response[0].split(".")[0]
         self.textPathDisplay.setText("<i>Text file path:</i> " + response[0])
         return response
 
@@ -161,7 +163,7 @@ class readalongsUI(QMainWindow):
         import socketserver
 
         PORT = 7000
-        DIRECTORY = "current"
+        DIRECTORY = "output"
 
         class Handler(http.server.SimpleHTTPRequestHandler):
             def __init__(self, *args, **kwargs):
@@ -195,14 +197,15 @@ class readalongsUI(QMainWindow):
         # save the files into local address
         from readalongs.text.make_smil import make_smil
 
-        # TODO: replace the "current" in the saving pathes
-        tokenized_xml_path = os.path.join(self.config["output_base"], "current.xml")
-        audio_path = os.path.join(self.config["output_base"], "current.m4a")
+        # Note: this filename is based on user's text file path.
+        save_filename = self.config.get("filename", "output")
+        tokenized_xml_path = os.path.join(self.config["output_base"], save_filename + ".xml")
+        audio_path = os.path.join(self.config["output_base"], save_filename + ".m4a")
         smil = make_smil(
             os.path.basename(tokenized_xml_path), os.path.basename(audio_path), results
         )
 
-        smil_path = os.path.join(self.config["output_base"], "current.smil")
+        smil_path = os.path.join(self.config["output_base"], save_filename + ".smil")
         save_xml(tokenized_xml_path, results["tokenized"])
 
         import shutil
@@ -221,7 +224,7 @@ class readalongsUI(QMainWindow):
         input_file = self.config["textfile"]
         if not self.config.get("xmlfile"):
             self.config["xmlfile"] = os.path.join(
-                self.config["output_base"], "current-prep.xml"
+                self.config["output_base"], save_filename + "-prep.xml"
             )
 
         out_file = self.config["xmlfile"]
