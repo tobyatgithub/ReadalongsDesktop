@@ -108,7 +108,7 @@ class readalongsUI(QMainWindow):
         )
         self.config["textfile"] = response[0]
         # grab the filename here:
-        self.config["filename"] = os.path.basename(response[0].split(".")[0]
+        self.config["filename"] = os.path.basename(response[0]).split(".")[0]
         self.textPathDisplay.setText("<i>Text file path:</i> " + response[0])
         return response
 
@@ -199,7 +199,9 @@ class readalongsUI(QMainWindow):
 
         # Note: this filename is based on user's text file path.
         save_filename = self.config.get("filename", "output")
-        tokenized_xml_path = os.path.join(self.config["output_base"], save_filename + ".xml")
+        tokenized_xml_path = os.path.join(
+            self.config["output_base"], save_filename + ".xml"
+        )
         audio_path = os.path.join(self.config["output_base"], save_filename + ".m4a")
         smil = make_smil(
             os.path.basename(tokenized_xml_path), os.path.basename(audio_path), results
