@@ -1,2 +1,26 @@
 # ReadalongsDesktop
-A desktop GUI app for readalongs
+
+This library is a desktop app with GUI for the [readalongs studio](https://github.com/ReadAlongs/Studio) project.  
+Readalongs is an audiobook alignment tool for indigenous language.
+
+## Table of Contents
+
+- [Readalongs Desktop](#ReadalongsDesktop)
+  - [Table of Contents](#table-of-contents)
+  - [Background](#background)
+
+## Background
+
+A desktop version of readalongs is developed in order to overcome these three main challenges:
+
+1. Direct users may not be familiar with Linux, Python, and Docker.
+2. Users may have limited access to the internet
+3. Communities would prefer to proform tasks offline. (data privacy)
+
+As a result, this desktop version of readalong will allow users to perform tasks by clicks, and support all functionalities without needing the internet.
+
+## Install
+
+## Usage
+
+## License
