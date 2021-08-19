@@ -7,9 +7,6 @@ from readalongs.align import create_input_tei
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
 
 
-# window.setLayout(layout)
-
-
 class readalongsUI(QMainWindow):
     def __init__(self):
         super().__init__()
