@@ -21,6 +21,38 @@ As a result, this desktop version of readalong will allow users to perform tasks
 
 ## Install
 
+0. (Optional) Create a conda env, notice that python version has to be >= 3.7
+
+```bash
+# create
+conda create --name readalongsDesktop python=3.7
+
+# activate
+source activate readalongsDesktop
+```
+
+1. Install packages
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Usage
+
+1. Start the Desktop app via terminal
+
+```bash
+python desktopApp.py
+```
+
+2. Run with provided testing file:
+
+- click the first "Browse" button to upload the sample txt file `1.Welcome.txt`
+- click the second "Browse" button to upload the sample audio file `1.Welcome.mp3`
+- select `iku` as the mapping from the drop done, click "Confirm"
+- click "Next Step"
+- Open a browser and go to `http://localhost:7000/`
+
+3. Exit (need fix) by hit control-C in terminal
 
 ## License
