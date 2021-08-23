@@ -37,6 +37,22 @@ source activate readalongsDesktop
 pip install -r requirements.txt
 ```
 
+2. (TODO: need fix) package with pyinstaller to distribute
+
+```bash
+pip install pyinstaller
+pyinstaller desktopApp.py
+```
+
+To see the error code:
+
+```bash
+#go to -> dist -> desktopApp -> desktopApp (executable)
+cd dist/desktopApp
+```
+
+Double click on the `desktopApp` executable (wait for 20-30 seconds) and you will see the running results (rihgt now it shows can not find the g2p mapping file)
+
 ## Usage
 
 1. Start the Desktop app via terminal
