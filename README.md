@@ -41,7 +41,9 @@ pip install -r requirements.txt
 
 ```bash
 pip install pyinstaller
-pyinstaller desktopApp.py
+pyinstaller desktopApp.py --add-binary ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-binary ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs
+
+pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs
 ```
 
 To see the error code:

@@ -3,6 +3,7 @@ current/
 output/
 .vscode/
 .DS_Store
+stackOverFlowExample.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

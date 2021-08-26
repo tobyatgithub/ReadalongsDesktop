@@ -1,10 +1,33 @@
 import os, sys
+import http.server
+import socketserver
 
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QMainWindow, QMessageBox
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QComboBox, QFileDialog
-from PyQt5.QtCore import Qt
 from readalongs.align import create_input_tei
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
+
+HOST = "127.0.0.1"
+PORT = 7000
+DIRECTORY = "output"
+
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=DIRECTORY, **kwargs)
+
+
+class HttpDaemon(QtCore.QThread):
+    def run(self):
+        self._server = http.server.HTTPServer((HOST, PORT), Handler)
+        self._server.serve_forever()
+
+    def stop(self):
+        self._server.shutdown()
+        self._server.socket.close()
+        self.wait()
 
 
 class readalongsUI(QMainWindow):
@@ -41,6 +64,8 @@ class readalongsUI(QMainWindow):
             "g2p_fallback": None,
             "g2p_verbose": False,
         }
+
+        self.httpd = HttpDaemon(self)
 
     def _createDisplay(self):
         helloMsg = QLabel(
@@ -85,10 +110,10 @@ class readalongsUI(QMainWindow):
         self.generalLayout.addWidget(mappingConfirmButton, 5, 4, 1, 1)
         mappingConfirmButton.clicked.connect(self.selectMapping)
 
-        NextButton = QPushButton("Next Step")
-        NextButton.setSizePolicy(100, 120)
-        self.generalLayout.addWidget(NextButton, 7, 1)
-        NextButton.clicked.connect(self.callMajorProcess)
+        self.NextButton = QPushButton("Next Step")
+        self.NextButton.setSizePolicy(100, 120)
+        self.generalLayout.addWidget(self.NextButton, 7, 1)
+        self.NextButton.clicked.connect(self.callMajorProcess)
 
     def selectMapping(self):
         # unnecessary to do option, language is a plain 3-letter text
@@ -156,19 +181,10 @@ class readalongsUI(QMainWindow):
         # self.g2p()
 
         # TODO: need threading
-        import http.server
-        import socketserver
-
-        PORT = 7000
-        DIRECTORY = "output"
-
-        class Handler(http.server.SimpleHTTPRequestHandler):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, directory=DIRECTORY, **kwargs)
-
-        with socketserver.TCPServer(("", PORT), Handler) as httpd:
-            print("serving at port", PORT)
-            httpd.serve_forever()
+        if self.NextButton.text() == "Next Step":
+            self.httpd.start()
+            self.NextButton.setText("Stop")
+            self.NextButton.clicked.connect(self.httpd.stop)
 
     def align(self):
         temp_base = None
