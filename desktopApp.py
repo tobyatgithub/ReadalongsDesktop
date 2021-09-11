@@ -2,17 +2,63 @@ import os, sys
 import http.server
 import socketserver
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QMainWindow, QMessageBox
-from PyQt5.QtWidgets import QGridLayout, QPushButton, QComboBox, QFileDialog
+# from PyQt5 import QtCore
+# from PyQt5.QtCore import Qt
+# from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QMainWindow, QMessageBox
+# from PyQt5.QtWidgets import QGridLayout, QPushButton, QComboBox, QFileDialog
+from qtpy import QtCore
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QApplication, QLabel, QWidget, QMainWindow, QMessageBox
+from qtpy.QtWidgets import QGridLayout, QPushButton, QComboBox, QFileDialog
+from qtpy.QtGui import QFont
+# from qtpy.uic import loadUi
+
 from readalongs.align import create_input_tei
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
 
 HOST = "127.0.0.1"
 PORT = 7000
 DIRECTORY = "output"
+TEXT_FONT = "Optima"
+BUTTON_SIZE = 18
+TITLE_SIZE = 48
 
+style = '''
+QWidget {
+    background-color: white;
+    font: Optima;
+} 
+
+QLabel {
+    
+    font-size: 20px;
+    color: #006325;     
+}        
+
+QPushButton {
+    background-color: #006325;
+    font: Optima;
+    font-size:18px;
+    color: white;
+
+    min-width:  80;
+    max-width:  140px;
+    min-height: 80px;
+    max-height: 140px;
+
+    border-radius: 35px;        
+    border-width: 1px;
+    border-color: #9A660B;
+    border-style: solid;
+}
+QPushButton:hover {
+    background-color: #328930;
+}
+QPushButton:pressed {
+    background-color: #80c342;
+}    
+
+'''
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -34,6 +80,7 @@ class readalongsUI(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Readlongs App")
+        self.setMinimumSize(1180, 766)
 
         self.generalLayout = QGridLayout()
         self._centralWidget = QWidget(self)
@@ -64,7 +111,7 @@ class readalongsUI(QMainWindow):
             "g2p_fallback": None,
             "g2p_verbose": False,
         }
-
+        
         self.httpd = HttpDaemon(self)
 
     def _createDisplay(self):
@@ -73,28 +120,45 @@ class readalongsUI(QMainWindow):
             <p>Please upload the text file, audio file, 
             and mapping file you want readalongs to align.</p>"""
         )
-
+        helloMsg.setFont(QFont(TEXT_FONT, TITLE_SIZE))
         self.generalLayout.addWidget(helloMsg, 0, 1, 1, 2)
+
+        extra_Msg = QLabel(
+            """
+            <p>ReadAlong Studio is an end-to-end audio/text <br>
+            aligner where you can visualize the alignment of <br>
+            your audio and text files for a specific language.</p>
+            """
+        )
+        extra_Msg.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
+        self.generalLayout.addWidget(extra_Msg, 1, 1, 1, 3)
+
         # helloMsg.move(60, 15)
-        self.generalLayout.addWidget(QLabel("Upload Text file"), 1, 1)
+        upload_text_file_label = QLabel("Upload Text file")
+        upload_text_file_label.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
+        self.generalLayout.addWidget(upload_text_file_label, 2, 1)
 
         self.textPathDisplay = QLabel("<i>Text file path:</i> None selected.")
-        self.generalLayout.addWidget(self.textPathDisplay, 2, 1, 1, 3)
+        self.generalLayout.addWidget(self.textPathDisplay, 3, 1, 1, 3)
 
-        self.generalLayout.addWidget(QLabel("Upload Audio file"), 3, 1)
+        upload_audio_file_label = QLabel("Upload Audio file")
+        upload_audio_file_label.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
+        self.generalLayout.addWidget(upload_audio_file_label, 4, 1)
 
         self.audioPathDisplay = QLabel("<i>Audio file path:</i> None selected.")
-        self.generalLayout.addWidget(self.audioPathDisplay, 4, 1, 1, 3)
+        self.generalLayout.addWidget(self.audioPathDisplay, 5, 1, 1, 3)
 
-        self.generalLayout.addWidget(QLabel("Upload Mapping "), 5, 1)
+        upload_mapping_label = QLabel("Upload Mapping")
+        upload_mapping_label.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
+        self.generalLayout.addWidget(upload_mapping_label, 6, 1)
 
     def _createButtons(self):
         uploadTextButton = QPushButton("Browse")
-        self.generalLayout.addWidget(uploadTextButton, 1, 4, 1, 1)
+        self.generalLayout.addWidget(uploadTextButton, 2, 4, 1, 1)
         uploadTextButton.clicked.connect(self.getTextFile)
 
         uploadAudioButton = QPushButton("Browse")
-        self.generalLayout.addWidget(uploadAudioButton, 3, 4, 1, 1)
+        self.generalLayout.addWidget(uploadAudioButton, 4, 4, 1, 1)
         uploadAudioButton.clicked.connect(self.getAudioFile)
 
         # grab the language dynamically
@@ -104,15 +168,17 @@ class readalongsUI(QMainWindow):
         # self.mappingOptions = ("eng", "fra")
         self.mappingDropDown = QComboBox()
         self.mappingDropDown.addItems(self.mappingOptions)
-        self.generalLayout.addWidget(self.mappingDropDown, 6, 1, 1, 2)
+        self.generalLayout.addWidget(self.mappingDropDown, 7, 1, 1, 2)
 
         mappingConfirmButton = QPushButton("Confirm")
-        self.generalLayout.addWidget(mappingConfirmButton, 5, 4, 1, 1)
+        self.generalLayout.addWidget(mappingConfirmButton, 6, 4, 1, 1)
         mappingConfirmButton.clicked.connect(self.selectMapping)
 
-        self.NextButton = QPushButton("Next Step")
+        # self.NextButton = QPushButton("Next Step")
+        self.NextButton = QPushButton("Align your files")
+        self.NextButton.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
         self.NextButton.setSizePolicy(100, 120)
-        self.generalLayout.addWidget(self.NextButton, 7, 1)
+        self.generalLayout.addWidget(self.NextButton, 8, 1)
         self.NextButton.clicked.connect(self.callMajorProcess)
 
     def selectMapping(self):
@@ -291,7 +357,7 @@ class readalongsUI(QMainWindow):
 def main():
     # Create an instance of QApplication
     app = QApplication(sys.argv)
-
+    app.setStyleSheet(style)
     # Show the calculator's GUI
     view = readalongsUI()
     view.show()
