@@ -11,6 +11,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QApplication, QLabel, QWidget, QMainWindow, QMessageBox
 from qtpy.QtWidgets import QGridLayout, QPushButton, QComboBox, QFileDialog
 from qtpy.QtGui import QFont
+
 # from qtpy.uic import loadUi
 
 from readalongs.align import create_input_tei
@@ -23,7 +24,7 @@ TEXT_FONT = "Optima"
 BUTTON_SIZE = 18
 TITLE_SIZE = 48
 
-style = '''
+style = """
 QWidget {
     background-color: white;
     font: Optima;
@@ -58,7 +59,8 @@ QPushButton:pressed {
     background-color: #80c342;
 }    
 
-'''
+"""
+
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -111,7 +113,7 @@ class readalongsUI(QMainWindow):
             "g2p_fallback": None,
             "g2p_verbose": False,
         }
-        
+
         self.httpd = HttpDaemon(self)
 
     def _createDisplay(self):
@@ -247,7 +249,7 @@ class readalongsUI(QMainWindow):
         # self.g2p()
 
         # TODO: need threading
-        if self.NextButton.text() == "Next Step":
+        if self.NextButton.text() == "Align your files":
             self.httpd.start()
             self.NextButton.setText("Stop")
             self.NextButton.clicked.connect(self.httpd.stop)
