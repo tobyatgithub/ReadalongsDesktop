@@ -57,6 +57,12 @@ cd dist/desktopApp
 
 Double click on the `desktopApp` executable (wait for 20-30 seconds) and you will see the running results (rihgt now it shows can not find the g2p mapping file)
 
+3. For mac m1 users, you may need to install upx first
+
+https://macappstore.org/upx/
+
+`arch -arm64 brew install --build-from-source upx`
+
 ## Usage
 
 1. Start the Desktop app via terminal
