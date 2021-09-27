@@ -37,15 +37,13 @@ source activate readalongsDesktop
 pip install -r requirements.txt
 ```
 
-2. (TODO: need fix) package with pyinstaller to distribute
-   (fixed g2p pkl missing)
-   (soundswallower not working for now.)
+2. Package with pyinstaller to distribute
 
 ```bash
 pip install pyinstaller
 pyinstaller desktopApp.py --add-binary ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-binary ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs
 
-pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-data ../SoundSwallower/model/en-us/mdef:/SoundSwallower/model/en-us
+pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-data ../SoundSwallower/model/en-us/mdef:SoundSwallower/model/en-us
 ```
 
 To see the error code:

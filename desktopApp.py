@@ -164,7 +164,7 @@ class readalongsUI(QMainWindow):
         uploadAudioButton.clicked.connect(self.getAudioFile)
 
         # grab the language dynamically
-        from readalongs.utility import getLangs
+        from readalongs.util import getLangs
 
         self.mappingOptions = getLangs()
         # self.mappingOptions = ("eng", "fra")
@@ -262,7 +262,7 @@ class readalongsUI(QMainWindow):
             save_temps=temp_base,
         )
         from readalongs.align import align_audio
-        from readalongs.utility import parse_g2p_fallback
+        from readalongs.util import parse_g2p_fallback
 
         results = align_audio(
             tmpTextFile,
@@ -344,7 +344,7 @@ class readalongsUI(QMainWindow):
 
         g2p_xml = add_ids(g2p_xml)
         from readalongs.text.convert_xml import convert_xml
-        from readalongs.utility import parse_g2p_fallback
+        from readalongs.util import parse_g2p_fallback
 
         g2p_xml, valid = convert_xml(
             g2p_xml,
