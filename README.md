@@ -79,4 +79,8 @@ python desktopApp.py
 
 3. Exit (need fix) by hit control-C in terminal
 
+```
+docker run -p 5000:5000 -it -v $(pwd):/opt/ReadAlongsDesktop -u $(id -u):$(id -g) readalongs-desktop bash
+```
+
 ## License
