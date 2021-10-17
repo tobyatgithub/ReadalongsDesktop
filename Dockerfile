@@ -7,6 +7,7 @@ ENV PORT 5000
 #  - swig: required by pocketsphinx
 #  - libpulse-dev: required by pocketsphinx
 #  - portaudio19-dev: required by pocketsphinx
+RUN apt-get install libxml2 libxml2-dev
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
