@@ -14,8 +14,9 @@ from qtpy.QtGui import QFont
 
 # from qtpy.uic import loadUi
 
-from readalongs.align import create_input_tei
+from readalongs.align import create_input_tei, align_audio
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
+from readalongs.util import getLangs, parse_g2p_fallback
 
 HOST = "127.0.0.1"
 PORT = 7000
@@ -164,17 +165,16 @@ class readalongsUI(QMainWindow):
         uploadAudioButton.clicked.connect(self.getAudioFile)
 
         # grab the language dynamically
-        from readalongs.util import getLangs
 
         self.mappingOptions, _ = getLangs()
-        # self.mappingOptions = ("eng", "fra")
         self.mappingDropDown = QComboBox()
         self.mappingDropDown.addItems(self.mappingOptions)
         self.generalLayout.addWidget(self.mappingDropDown, 7, 1, 1, 2)
+        self.mappingDropDown.currentTextChanged.connect(self.selectMapping)
 
-        mappingConfirmButton = QPushButton("Confirm")
-        self.generalLayout.addWidget(mappingConfirmButton, 6, 4, 1, 1)
-        mappingConfirmButton.clicked.connect(self.selectMapping)
+        # mappingConfirmButton = QPushButton("Confirm")
+        # self.generalLayout.addWidget(mappingConfirmButton, 6, 4, 1, 1)
+        # mappingConfirmButton.clicked.connect(self.selectMapping)
 
         # self.NextButton = QPushButton("Next Step")
         self.NextButton = QPushButton("Align your files")
@@ -184,9 +184,8 @@ class readalongsUI(QMainWindow):
         self.NextButton.clicked.connect(self.callMajorProcess)
 
     def selectMapping(self):
-        # unnecessary to do option, language is a plain 3-letter text
         self.config["language"] = self.mappingDropDown.currentText()
-        self.popupMessage("LANGS = " + self.config["language"])
+        # self.popupMessage("LANGS = " + self.config["language"]) # debug use.
 
     def getTextFile(self):
         response = QFileDialog.getOpenFileName(
@@ -248,7 +247,6 @@ class readalongsUI(QMainWindow):
         # self.tokenize()
         # self.g2p()
 
-        # TODO: need threading
         if self.NextButton.text() == "Align your files":
             self.httpd.start()
             self.NextButton.setText("Stop")
@@ -261,8 +259,6 @@ class readalongsUI(QMainWindow):
             text_language=self.config["language"],
             save_temps=temp_base,
         )
-        from readalongs.align import align_audio
-        from readalongs.util import parse_g2p_fallback
 
         results = align_audio(
             tmpTextFile,
@@ -303,64 +299,63 @@ class readalongsUI(QMainWindow):
             os.path.basename(audio_path),
         )
 
-    def prepare(self):
-        input_file = self.config["textfile"]
-        if not self.config.get("xmlfile"):
-            self.config["xmlfile"] = os.path.join(
-                self.config["output_base"], save_filename + "-prep.xml"
-            )
+    # def prepare(self):
+    #     input_file = self.config["textfile"]
+    #     if not self.config.get("xmlfile"):
+    #         self.config["xmlfile"] = os.path.join(
+    #             self.config["output_base"], save_filename + "-prep.xml"
+    #         )
 
-        out_file = self.config["xmlfile"]
-        filehandle, filename = create_input_tei(
-            input_file_name=input_file,
-            text_language=self.config["language"],
-            output_file=out_file,
-        )
+    #     out_file = self.config["xmlfile"]
+    #     filehandle, filename = create_input_tei(
+    #         input_file_name=input_file,
+    #         text_language=self.config["language"],
+    #         output_file=out_file,
+    #     )
 
-    def tokenize(self):
-        from lxml import etree
-        from readalongs.text.tokenize_xml import tokenize_xml
+    # def tokenize(self):
+    #     from lxml import etree
+    #     from readalongs.text.tokenize_xml import tokenize_xml
 
-        if not self.config.get("tokfile"):
-            self.config["tokfile"] = self.config["xmlfile"].replace("prep", "tok")
-        xml = etree.parse(self.config["xmlfile"]).getroot()
-        xml = tokenize_xml(xml)
-        save_xml(self.config["tokfile"], xml)
+    #     if not self.config.get("tokfile"):
+    #         self.config["tokfile"] = self.config["xmlfile"].replace("prep", "tok")
+    #     xml = etree.parse(self.config["xmlfile"]).getroot()
+    #     xml = tokenize_xml(xml)
+    #     save_xml(self.config["tokfile"], xml)
 
-    def g2p(self):
-        import io
-        from lxml import etree
+    # def g2p(self):
+    #     import io
+    #     from lxml import etree
 
-        g2p_kwargs = {
-            "tokfile": io.BufferedReader(io.FileIO(self.config["tokfile"])),
-            "g2pfile": self.config["xmlfile"].replace("prep", "g2p"),
-            "g2p_fallback": None,
-            "force_overwrite": True,
-            "g2p_verbose": False,
-            "debug": False,
-        }
-        g2p_xml = etree.parse(g2p_kwargs["tokfile"]).getroot()
-        from readalongs.text.add_ids_to_xml import add_ids
+    #     g2p_kwargs = {
+    #         "tokfile": io.BufferedReader(io.FileIO(self.config["tokfile"])),
+    #         "g2pfile": self.config["xmlfile"].replace("prep", "g2p"),
+    #         "g2p_fallback": None,
+    #         "force_overwrite": True,
+    #         "g2p_verbose": False,
+    #         "debug": False,
+    #     }
+    #     g2p_xml = etree.parse(g2p_kwargs["tokfile"]).getroot()
+    #     from readalongs.text.add_ids_to_xml import add_ids
 
-        g2p_xml = add_ids(g2p_xml)
-        from readalongs.text.convert_xml import convert_xml
-        from readalongs.util import parse_g2p_fallback
+    #     g2p_xml = add_ids(g2p_xml)
+    #     from readalongs.text.convert_xml import convert_xml
+    #     from readalongs.util import parse_g2p_fallback
 
-        g2p_xml, valid = convert_xml(
-            g2p_xml,
-            g2p_fallbacks=parse_g2p_fallback(g2p_kwargs["g2p_fallback"]),
-            verbose_warnings=g2p_kwargs["g2p_verbose"],
-        )
-        from readalongs.text.util import save_xml
+    #     g2p_xml, valid = convert_xml(
+    #         g2p_xml,
+    #         g2p_fallbacks=parse_g2p_fallback(g2p_kwargs["g2p_fallback"]),
+    #         verbose_warnings=g2p_kwargs["g2p_verbose"],
+    #     )
+    #     from readalongs.text.util import save_xml
 
-        save_xml(g2p_kwargs["g2pfile"], g2p_xml)
+    #     save_xml(g2p_kwargs["g2pfile"], g2p_xml)
 
 
 def main():
     # Create an instance of QApplication
     app = QApplication(sys.argv)
     app.setStyleSheet(style)
-    # Show the calculator's GUI
     view = readalongsUI()
     view.show()
 
