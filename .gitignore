@@ -3,6 +3,7 @@ current/
 output/
 .vscode/
 .DS_Store
+*.icloud
 stackOverFlowExample.py
 
 # Byte-compiled / optimized / DLL files
