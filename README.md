@@ -8,20 +8,23 @@ Readalongs is an audiobook alignment tool for indigenous language.
 - [Readalongs Desktop](#ReadalongsDesktop)
   - [Table of Contents](#table-of-contents)
   - [Background](#background)
+  - [Install](#Install)
+  - [Usage](#Usage)
+  - [License](#License)
 
 ## Background
 
 A desktop version of readalongs is developed in order to overcome these three main challenges:
 
-1. Direct users may not be familiar with Linux, Python, and Docker.
-2. Users may have limited access to the internet
-3. Communities would prefer to proform tasks offline. (data privacy)
+1. Direct users may not be familiar with Linux/Unix, Python, and Docker technologies (e.g. we shall not require users to understand how to use terminal to use this app.)
+2. Users may have limited access to the internet.
+3. Communities would prefer to perform tasks offline. (data privacy)
 
 As a result, this desktop version of readalong will allow users to perform tasks by clicks, and support all functionalities without needing the internet.
 
 ## Install
 
-0. (Optional) Create a conda env, notice that python version has to be >= 3.7
+### 0. (Optional) Create a conda env, notice that python version has to be >= 3.7
 
 ```bash
 # create
@@ -31,39 +34,60 @@ conda create --name readalongsDesktop python=3.7
 source activate readalongsDesktop
 ```
 
-1. Install packages
+### 1. Git clone and install packages
 
 ```bash
+git clone https://github.com/tobyatgithub/ReadalongsDesktop.git
+cd ReadalongsDesktop
 pip install -r requirements.txt
 ```
 
-2. (TODO: need fix) package with pyinstaller to distribute
-   (fixed g2p pkl missing)
-   (soundswallower not working for now.)
+### 2. Pick a Qt library to install:
+
+For licensing reason, the user will need to pick their own qt library to install in the same python environment, the common options are pyqt4, pyqt5, pyside2, and pyside6.
+
+For example, you can install pyqt5 with:
+
+```bash
+pip install PyQt5
+```
+
+At this point, you shall be able to run the GUI app on your local machine with:
+
+```bash
+python desktopapp.py
+```
+
+(To test:) user may need to install `g2p`, `Studio`, and `SoundSwallower` in the same root directory to make it work.
+
+### 3. Package this app with pyinstaller to distribute
+
+In the `ReadalongsDesktop` folder, install the `pyinstaller` and run the following command (depends on windows/mac)
 
 ```bash
 pip install pyinstaller
-pyinstaller desktopApp.py --add-binary ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-binary ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs
+(on windows)
+pyinstaller desktopApp.py --add-binary ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-binary ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-binary ../SoundSwallower/model/en-us/mdef:SoundSwallower/model/en-us
 
-pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-data ../SoundSwallower/model/en-us/mdef:/SoundSwallower/model/en-us
+(on mac)
+pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-data ../SoundSwallower/model/en-us/mdef:SoundSwallower/model/en-us
 ```
 
-To see the error code:
+Then, go to -> dist -> desktopApp. You shall find an executable file named as `desktopApp`
 
-```bash
-#go to -> dist -> desktopApp -> desktopApp (executable)
-cd dist/desktopApp
-```
+Double click on the `desktopApp` executable (wait for a little while) and you shall see the GUI.
 
-Double click on the `desktopApp` executable (wait for 20-30 seconds) and you will see the running results (rihgt now it shows can not find the g2p mapping file)
-
-3. For mac m1 users, you may need to install upx first
+PS: For mac m1 users, you may need to install upx first
 
 https://macappstore.org/upx/
 
-`arch -arm64 brew install --build-from-source upx`
+```bash
+arch -arm64 brew install --build-from-source upx
+```
 
 ## Usage
+
+In this repo, we also included a small example to run:
 
 1. Start the Desktop app via terminal
 
