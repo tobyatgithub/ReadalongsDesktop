@@ -66,11 +66,18 @@ In the `ReadalongsDesktop` folder, install the `pyinstaller` and run the followi
 
 ```bash
 pip install pyinstaller
-(on windows)
-pyinstaller desktopApp.py --add-binary ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-binary ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-binary ../SoundSwallower/model/en-us/mdef:SoundSwallower/model/en-us
+```
 
-(on mac)
-pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-data ../SoundSwallower/model/en-us/mdef:SoundSwallower/model/en-us
+Notice we will need to use different command on windows vs. mac. On windows (to test):
+
+```bash
+pyinstaller desktopApp.py --add-binary ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-binary ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-binary ../SoundSwallower:SoundSwallower
+```
+
+On mac (tested on intel chip):
+
+```
+pyinstaller desktopApp.py --add-data ../g2p/g2p/mappings/langs/langs.pkl:g2p/mappings/langs --add-data ../g2p/g2p/mappings/langs/network.pkl:g2p/mappings/langs --add-data ../SoundSwallower:SoundSwallower
 ```
 
 Then, go to -> dist -> desktopApp. You shall find an executable file named as `desktopApp`
