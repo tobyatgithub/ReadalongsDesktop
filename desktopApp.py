@@ -245,11 +245,15 @@ class readalongsUI(QMainWindow):
             self.httpd.start()
             self.NextButton.setText("Stop")
             self.NextButton.clicked.connect(self.stopServer)
+            self.popupMessage(
+                f"Success! Go to localhost:{PORT} to see the result.")
 
     def stopServer(self):
         self.httpd.stop()
         self.NextButton.setText("Align your files")
         self.NextButton.clicked.connect(self.callMajorProcess)
+        self.popupMessage(
+            f"Successfully stopped server. Now you can resubmit new files.")
 
     def align(self):
         temp_base = None
