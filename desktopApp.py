@@ -226,27 +226,30 @@ class readalongsUI(QMainWindow):
         5. call an interactive web
         """
         # input check
-        if not all([
-                self.config["language"],
-                self.config["textfile"],
-                self.config["audiofile"],
-        ]):
-            self.popupMessage(
-                "At least one of the following three parameters is \
-                    missing: text file path, audio file path, mapping.")
-            return  # kill and go back
+        try:
+            if not all([
+                    self.config["language"],
+                    self.config["textfile"],
+                    self.config["audiofile"],
+            ]):
+                self.popupMessage(
+                    "At least one of the following three parameters is \
+                        missing: text file path, audio file path, mapping.")
+                return  # kill and go back
 
-        self.align()
-        # self.prepare() # will require in version 2.
-        # self.tokenize()
-        # self.g2p()
+            self.align()
+            # self.prepare() # will require in version 2.
+            # self.tokenize()
+            # self.g2p()
 
-        if self.NextButton.text() == "Align your files":
-            self.httpd.start()
-            self.NextButton.setText("Stop")
-            self.NextButton.clicked.connect(self.stopServer)
-            self.popupMessage(
-                f"Success! Go to localhost:{PORT} to see the result.")
+            if self.NextButton.text() == "Align your files":
+                self.httpd.start()
+                self.NextButton.setText("Stop")
+                self.NextButton.clicked.connect(self.stopServer)
+                self.popupMessage(
+                    f"Success! Go to localhost:{PORT} to see the result.")
+        except Exception as e:
+            self.popupMessage(f"Error: {e}")
 
     def stopServer(self):
         self.httpd.stop()
