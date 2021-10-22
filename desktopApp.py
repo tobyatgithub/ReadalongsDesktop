@@ -76,7 +76,7 @@ class HttpDaemon(QtCore.QThread):
     def stop(self):
         self._server.shutdown()
         self._server.socket.close()
-        self.wait()
+        # self.wait()
 
 
 class readalongsUI(QMainWindow):
@@ -118,21 +118,17 @@ class readalongsUI(QMainWindow):
         self.httpd = HttpDaemon(self)
 
     def _createDisplay(self):
-        helloMsg = QLabel(
-            """<h1>Welcome to Readalongs!</h1>
+        helloMsg = QLabel("""<h1>Welcome to Readalongs!</h1>
             <p>Please upload the text file, audio file, 
-            and mapping file you want readalongs to align.</p>"""
-        )
+            and mapping file you want readalongs to align.</p>""")
         helloMsg.setFont(QFont(TEXT_FONT, TITLE_SIZE))
         self.generalLayout.addWidget(helloMsg, 0, 1, 1, 2)
 
-        extra_Msg = QLabel(
-            """
+        extra_Msg = QLabel("""
             <p>ReadAlong Studio is an end-to-end audio/text <br>
             aligner where you can visualize the alignment of <br>
             your audio and text files for a specific language.</p>
-            """
-        )
+            """)
         extra_Msg.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
         self.generalLayout.addWidget(extra_Msg, 1, 1, 1, 3)
 
@@ -148,7 +144,8 @@ class readalongsUI(QMainWindow):
         upload_audio_file_label.setFont(QFont(TEXT_FONT, BUTTON_SIZE))
         self.generalLayout.addWidget(upload_audio_file_label, 4, 1)
 
-        self.audioPathDisplay = QLabel("<i>Audio file path:</i> None selected.")
+        self.audioPathDisplay = QLabel(
+            "<i>Audio file path:</i> None selected.")
         self.generalLayout.addWidget(self.audioPathDisplay, 5, 1, 1, 3)
 
         upload_mapping_label = QLabel("Upload Mapping")
@@ -229,17 +226,14 @@ class readalongsUI(QMainWindow):
         5. call an interactive web
         """
         # input check
-        if not all(
-            [
+        if not all([
                 self.config["language"],
                 self.config["textfile"],
                 self.config["audiofile"],
-            ]
-        ):
+        ]):
             self.popupMessage(
                 "At least one of the following three parameters is \
-                    missing: text file path, audio file path, mapping."
-            )
+                    missing: text file path, audio file path, mapping.")
             return  # kill and go back
 
         self.align()
@@ -250,7 +244,12 @@ class readalongsUI(QMainWindow):
         if self.NextButton.text() == "Align your files":
             self.httpd.start()
             self.NextButton.setText("Stop")
-            self.NextButton.clicked.connect(self.httpd.stop)
+            self.NextButton.clicked.connect(self.stopServer)
+
+    def stopServer(self):
+        self.httpd.stop()
+        self.NextButton.setText("Align your files")
+        self.NextButton.clicked.connect(self.callMajorProcess)
 
     def align(self):
         temp_base = None
@@ -276,15 +275,15 @@ class readalongsUI(QMainWindow):
 
         # Note: this filename is based on user's text file path.
         save_filename = self.config.get("filename", "output")
-        tokenized_xml_path = os.path.join(
-            self.config["output_base"], save_filename + ".xml"
-        )
-        audio_path = os.path.join(self.config["output_base"], save_filename + ".m4a")
-        smil = make_smil(
-            os.path.basename(tokenized_xml_path), os.path.basename(audio_path), results
-        )
+        tokenized_xml_path = os.path.join(self.config["output_base"],
+                                          save_filename + ".xml")
+        audio_path = os.path.join(self.config["output_base"],
+                                  save_filename + ".m4a")
+        smil = make_smil(os.path.basename(tokenized_xml_path),
+                         os.path.basename(audio_path), results)
 
-        smil_path = os.path.join(self.config["output_base"], save_filename + ".smil")
+        smil_path = os.path.join(self.config["output_base"],
+                                 save_filename + ".smil")
         save_xml(tokenized_xml_path, results["tokenized"])
 
         import shutil
