@@ -166,7 +166,8 @@ class readalongsUI(QMainWindow):
 
         # grab the language dynamically
 
-        self.mappingOptions, _ = getLangs()
+        langs, lang_names = getLangs()
+        self.mappingOptions = [f"{l} ({lang_names[l]})" for l in langs]
         self.mappingDropDown = QComboBox()
         self.mappingDropDown.addItems(self.mappingOptions)
         self.generalLayout.addWidget(self.mappingDropDown, 7, 1, 1, 2)
@@ -184,7 +185,7 @@ class readalongsUI(QMainWindow):
         self.NextButton.clicked.connect(self.callMajorProcess)
 
     def selectMapping(self):
-        self.config["language"] = self.mappingDropDown.currentText()
+        self.config["language"] = self.mappingDropDown.currentText().split(" ")[0]
         # self.popupMessage("LANGS = " + self.config["language"]) # debug use.
 
     def getTextFile(self):
