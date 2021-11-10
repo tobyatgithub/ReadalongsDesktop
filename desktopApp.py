@@ -280,13 +280,15 @@ class readalongsUI(QMainWindow):
 
         # save the files into local address
         from readalongs.text.make_smil import make_smil
-
+        # from readalongs.log import LOGGER
+        # LOGGER.info(self.config)
         # Note: this filename is based on user's text file path.
         save_filename = self.config.get("filename", "output")
         tokenized_xml_path = os.path.join(self.config["output_base"],
                                           save_filename + ".xml")
+        audio_extension = self.config["audiofile"].split(".")[-1]
         audio_path = os.path.join(self.config["output_base"],
-                                  save_filename + ".m4a")
+                                  save_filename + "." + audio_extension)
         smil = make_smil(os.path.basename(tokenized_xml_path),
                          os.path.basename(audio_path), results)
 
