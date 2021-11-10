@@ -17,6 +17,7 @@ from qtpy.QtGui import QFont
 from readalongs.align import create_input_tei, align_audio
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
 from readalongs.util import getLangs, parse_g2p_fallback
+from readalongs.log import LOGGER
 
 HOST = "127.0.0.1"
 PORT = 7000
@@ -182,7 +183,8 @@ class readalongsUI(QMainWindow):
         self.NextButton.clicked.connect(self.callMajorProcess)
 
     def selectMapping(self):
-        self.config["language"] = self.mappingDropDown.currentText().split(" ")[0]
+        self.config["language"] = self.mappingDropDown.currentText().split(
+            " ")[0]
         # self.popupMessage("LANGS = " + self.config["language"]) # debug use.
 
     def getTextFile(self):
@@ -190,8 +192,9 @@ class readalongsUI(QMainWindow):
             parent=self,
             caption="Select a text file",
             directory=os.getcwd(),
-            filter="Text File (*.txt *csv);;Just another type (*.mp3 *.mp4)",
-            initialFilter="Text File (*.txt *csv)",
+            filter=
+            "Text File (*.txt *csv *.xml);;Just another type (*.mp3 *.mp4)",
+            initialFilter="Text File (*.txt *csv *.xml)",
         )
         self.config["textfile"] = response[0]
         # grab the filename here:
@@ -261,14 +264,20 @@ class readalongsUI(QMainWindow):
 
     def align(self):
         temp_base = None
-        tempfile, tmpTextFile = create_input_tei(
-            input_file_name=self.config["textfile"],
-            text_language=self.config["language"],
-            save_temps=temp_base,
-        )
+        # if text, turn to xml first
+        if self.config["textfile"].split(".")[-1] == "txt":
+            tempfile, xml_textfile = create_input_tei(
+                input_file_name=self.config["textfile"],
+                text_language=self.config["language"],
+                save_temps=temp_base,
+            )
+        elif self.config["textfile"].split(".")[-1] == "xml":
+            xml_textfile = self.config["textfile"]
+        else:
+            raise TypeError("Only accept a txt file or xml file.")
 
         results = align_audio(
-            tmpTextFile,
+            xml_textfile,
             self.config["audiofile"],
             unit=self.config["unit"],
             bare=self.config["bare"],
@@ -280,7 +289,7 @@ class readalongsUI(QMainWindow):
 
         # save the files into local address
         from readalongs.text.make_smil import make_smil
-        # from readalongs.log import LOGGER
+
         # LOGGER.info(self.config)
         # Note: this filename is based on user's text file path.
         save_filename = self.config.get("filename", "output")
