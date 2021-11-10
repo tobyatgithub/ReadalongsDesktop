@@ -1,4 +1,5 @@
 # ReadalongsDesktop
+![python badge](https://img.shields.io/badge/python-3.7-blue) ![license badge](https://img.shields.io/github/license/tobyatgithub/ReadalongsDesktop)
 
 This library is a desktop app with GUI for the [readalongs studio](https://github.com/ReadAlongs/Studio) project.  
 Readalongs is an audiobook alignment tool for indigenous language.
