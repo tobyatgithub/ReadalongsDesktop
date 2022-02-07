@@ -16,7 +16,7 @@ from qtpy.QtGui import QFont
 
 from readalongs.align import create_input_tei, align_audio
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
-from readalongs.util import getLangs, parse_g2p_fallback
+from readalongs.util import getLangs
 from readalongs.log import LOGGER
 
 HOST = "127.0.0.1"
@@ -112,7 +112,7 @@ class readalongsUI(QMainWindow):
             "save_temps": False,
             "text_grid": False,
             "output_xhtml": False,
-            "g2p_fallback": None,
+            "g2p_fallbacks": ["und"],
             "g2p_verbose": False,
         }
 
@@ -268,7 +268,7 @@ class readalongsUI(QMainWindow):
         if self.config["textfile"].split(".")[-1] == "txt":
             tempfile, xml_textfile = create_input_tei(
                 input_file_name=self.config["textfile"],
-                text_language=self.config["language"],
+                text_languages=[self.config["language"], *self.config["g2p_fallbacks"]],
                 save_temps=temp_base,
             )
         elif self.config["textfile"].split(".")[-1] == "xml":
@@ -283,7 +283,6 @@ class readalongsUI(QMainWindow):
             bare=self.config["bare"],
             config=self.config["config"],
             save_temps=temp_base,
-            g2p_fallbacks=parse_g2p_fallback(self.config["g2p_fallback"]),
             verbose_g2p_warnings=self.config["g2p_verbose"],
         )
 
