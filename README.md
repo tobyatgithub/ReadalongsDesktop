@@ -37,6 +37,15 @@ conda create --name readalongsDesktop python=3.7
 source activate readalongsDesktop
 ```
 
+On Windows, install `ffmpeg` and `qt` using conda:
+
+```bash
+conda install ffmpeg
+conda install qt
+```
+
+On other systems, install `ffmpeg` and `qt` using your standard package manager.
+
 ### 1. Git clone and install packages
 
 ```bash
@@ -45,14 +54,20 @@ cd ReadalongsDesktop
 pip install -r requirements.txt
 ```
 
-### 2. Pick a Qt library to install:
+### 2. Pick a Qt bindings library to install:
 
-For licensing reason, the user will need to pick their own qt library to install in the same python environment, the common options are pyqt4, pyqt5, pyside2, and pyside6.
+For licensing reason, the user will need to pick their own Qt bindings library to install in the same python environment, the common options are pyqt4, pyqt5, pyside2, and pyside6.
 
 For example, you can install pyqt5 with:
 
 ```bash
 pip install PyQt5
+```
+
+or
+
+```bash
+conda install pyqt5
 ```
 
 At this point, you shall be able to run the GUI app on your local machine with:
