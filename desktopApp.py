@@ -1,6 +1,5 @@
 import os, sys
 import http.server
-import socketserver
 
 # from PyQt5 import QtCore
 # from PyQt5.QtCore import Qt
@@ -15,10 +14,9 @@ from qtpy.QtGui import QFont
 # from qtpy.uic import loadUi
 
 import readalongs.api
-from readalongs.align import create_input_tei, align_audio
-from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
+# from readalongs.align import create_input_tei
+# from readalongs.text.util import save_xml
 from readalongs.util import get_langs
-from readalongs.log import LOGGER
 
 HOST = "127.0.0.1"
 PORT = 7000
@@ -267,60 +265,6 @@ class readalongsUI(QMainWindow):
             force_overwrite=self.config["force_overwrite"],
             save_temps=self.config["save_temps"],
         )
-        return
-
-        temp_base = None
-        # if text, turn to xml first
-        if self.config["textfile"].split(".")[-1] == "txt":
-            tempfile, xml_textfile = create_input_tei(
-                input_file_name=self.config["textfile"],
-                text_languages=[self.config["language"], *self.config["g2p_fallbacks"]],
-                save_temps=temp_base,
-            )
-        elif self.config["textfile"].split(".")[-1] == "xml":
-            xml_textfile = self.config["textfile"]
-        else:
-            raise TypeError("Only accept a txt file or xml file.")
-
-        results = align_audio(
-            xml_textfile,
-            self.config["audiofile"],
-            unit=self.config["unit"],
-            bare=self.config["bare"],
-            config=self.config["config"],
-            save_temps=temp_base,
-            verbose_g2p_warnings=self.config["g2p_verbose"],
-        )
-
-        # save the files into local address
-        from readalongs.text.make_smil import make_smil
-
-        # LOGGER.info(self.config)
-        # Note: this filename is based on user's text file path.
-        save_filename = self.config.get("filename", "output")
-        tokenized_xml_path = os.path.join(self.config["output_base"],
-                                          save_filename + ".xml")
-        audio_extension = self.config["audiofile"].split(".")[-1]
-        audio_path = os.path.join(self.config["output_base"],
-                                  save_filename + "." + audio_extension)
-        smil = make_smil(os.path.basename(tokenized_xml_path),
-                         os.path.basename(audio_path), results)
-
-        smil_path = os.path.join(self.config["output_base"],
-                                 save_filename + ".smil")
-        save_xml(tokenized_xml_path, results["tokenized"])
-
-        import shutil
-
-        shutil.copy(self.config["audiofile"], audio_path)
-
-        save_txt(smil_path, smil)
-        save_minimal_index_html(
-            os.path.join(self.config["output_base"], "index.html"),
-            os.path.basename(tokenized_xml_path),
-            os.path.basename(smil_path),
-            os.path.basename(audio_path),
-        )
 
     # def prepare(self):
     #     input_file = self.config["textfile"]
@@ -335,44 +279,6 @@ class readalongsUI(QMainWindow):
     #         text_language=self.config["language"],
     #         output_file=out_file,
     #     )
-
-    # def tokenize(self):
-    #     from lxml import etree
-    #     from readalongs.text.tokenize_xml import tokenize_xml
-
-    #     if not self.config.get("tokfile"):
-    #         self.config["tokfile"] = self.config["xmlfile"].replace("prep", "tok")
-    #     xml = etree.parse(self.config["xmlfile"]).getroot()
-    #     xml = tokenize_xml(xml)
-    #     save_xml(self.config["tokfile"], xml)
-
-    # def g2p(self):
-    #     import io
-    #     from lxml import etree
-
-    #     g2p_kwargs = {
-    #         "tokfile": io.BufferedReader(io.FileIO(self.config["tokfile"])),
-    #         "g2pfile": self.config["xmlfile"].replace("prep", "g2p"),
-    #         "g2p_fallback": None,
-    #         "force_overwrite": True,
-    #         "g2p_verbose": False,
-    #         "debug": False,
-    #     }
-    #     g2p_xml = etree.parse(g2p_kwargs["tokfile"]).getroot()
-    #     from readalongs.text.add_ids_to_xml import add_ids
-
-    #     g2p_xml = add_ids(g2p_xml)
-    #     from readalongs.text.convert_xml import convert_xml
-    #     from readalongs.util import parse_g2p_fallback
-
-    #     g2p_xml, valid = convert_xml(
-    #         g2p_xml,
-    #         g2p_fallbacks=parse_g2p_fallback(g2p_kwargs["g2p_fallback"]),
-    #         verbose_warnings=g2p_kwargs["g2p_verbose"],
-    #     )
-    #     from readalongs.text.util import save_xml
-
-    #     save_xml(g2p_kwargs["g2pfile"], g2p_xml)
 
 
 def main():
