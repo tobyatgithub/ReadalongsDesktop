@@ -14,9 +14,10 @@ from qtpy.QtGui import QFont
 
 # from qtpy.uic import loadUi
 
+import readalongs.api
 from readalongs.align import create_input_tei, align_audio
 from readalongs.text.util import save_txt, save_xml, save_minimal_index_html
-from readalongs.util import getLangs
+from readalongs.util import get_langs
 from readalongs.log import LOGGER
 
 HOST = "127.0.0.1"
@@ -101,17 +102,12 @@ class readalongsUI(QMainWindow):
             "audiofile": "",
             "xmlfile": "",
             "tokfile": "",
-            "text_input": True,
             "force_overwrite": True,
             "output_base": os.path.join(os.getcwd(), "output"),
             "bare": False,
             "config": None,
-            "closed_captioning": False,
-            "debug": True,
             "unit": "w",
             "save_temps": False,
-            "text_grid": False,
-            "output_xhtml": False,
             "g2p_fallbacks": ["und"],
             "g2p_verbose": False,
         }
@@ -164,7 +160,7 @@ class readalongsUI(QMainWindow):
 
         # grab the language dynamically
 
-        langs, lang_names = getLangs()
+        langs, lang_names = get_langs()
         self.mappingOptions = [f"{l} ({lang_names[l]})" for l in langs]
         self.mappingDropDown = QComboBox()
         self.mappingDropDown.addItems(self.mappingOptions)
@@ -263,6 +259,16 @@ class readalongsUI(QMainWindow):
             f"Successfully stopped server. Now you can resubmit new files.")
 
     def align(self):
+        readalongs.api.align(
+            textfile=self.config["textfile"],
+            audiofile=self.config["audiofile"],
+            output_base=self.config["output_base"],
+            language=[self.config["language"], *self.config["g2p_fallbacks"]],
+            force_overwrite=self.config["force_overwrite"],
+            save_temps=self.config["save_temps"],
+        )
+        return
+
         temp_base = None
         # if text, turn to xml first
         if self.config["textfile"].split(".")[-1] == "txt":
