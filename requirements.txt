@@ -1,3 +1,2 @@
-# -e git+https://github.com/roedoejet/g2p.git@841618d2d1fa8b42b36f3f5984dec6cdf51bf98d#egg=g2p
-# -e git+https://github.com/ReadAlongs/Studio.git@f05ef05b295c1571befc3c6eb8aea1aeda48d986#egg=readalongs
+readalongs>=0.2.20220126
 qtpy==1.11.2
